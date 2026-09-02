@@ -40,13 +40,13 @@ python scanner.py src/auth.py src/db.py
 Use a different model:
 
 ```bash
-python scanner.py --model gemini-2.5-pro vulnerable.py
+python scanner.py --model gemini-3-pro vulnerable.py
 ```
 
 | Option | Description |
 | --- | --- |
 | `paths` | One or more files to scan |
-| `--model` | Gemini model to use (default `gemini-2.5-flash`, or `$GEMINI_MODEL`) |
+| `--model` | Gemini model to use (default `gemini-3.5-flash`, or `$GEMINI_MODEL`) |
 
 Exit code is `0` when every file scanned cleanly and `1` if any scan failed.
 
@@ -57,6 +57,14 @@ Exit code is `0` when every file scanned cleanly and `1` if any scan failed.
 | `scanner.py` | The scanner |
 | `vulnerable.py` | Insecure sample code, used to check the scanner reports real findings |
 | `.env.example` | Template for the required environment variables |
+
+## Choosing a model
+
+Not every Gemini model will do this job. Some — `gemini-3.6-flash` among them — decline
+to report weaknesses in code that actually contains one, and answer only for clean
+files. `gemini-3.5-flash` is the default because it reviews reliably. If you switch
+models with `--model`, check it against `vulnerable.py` first: a model that reports
+nothing there is refusing, not passing the file.
 
 ## Notes
 

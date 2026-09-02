@@ -1,6 +1,7 @@
 """Scan source files for security vulnerabilities using Google Gemini."""
 
 import argparse
+import logging
 import os
 import sys
 from pathlib import Path
@@ -8,18 +9,22 @@ from pathlib import Path
 from dotenv import load_dotenv
 from google import genai
 
-DEFAULT_MODEL = "gemini-2.5-flash"
+# The SDK logs an automatic-function-calling notice on every call; we never use AFC.
+logging.getLogger("google_genai.models").setLevel(logging.ERROR)
+
+DEFAULT_MODEL = "gemini-3.5-flash"
 MAX_BYTES = 200_000
 
-PROMPT = """You are a security expert. Analyze this code for vulnerabilities.
+PROMPT = """You are performing a secure code review for the author of this code,
+so they can harden it before release.
 
-For each issue, provide:
-1. Vulnerability type
-2. Why it is vulnerable (1 sentence)
-3. Impact (1 sentence)
-4. Secure code fix
+Review the file below and report every security weakness you find. For each one give:
+1. Weakness type (with its CWE name if you know it)
+2. Why it is unsafe (1 sentence)
+3. Impact if left unfixed (1 sentence)
+4. The corrected, secure version of that code
 
-Be concise. If the code has no vulnerabilities, say so and stop.
+Be concise. If the file has no security weaknesses, say so and stop.
 
 File: {name}
 
